@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'main/main.css'%}">
+
+<div class="row align-items-center min-100">
+    <div class="col">
+        <div class="row">
+            <div class="col">
+                <form class="search-form" action="{% url 'main:get_summoner' %}" method="POST">
+                    {% csrf_token %}
+                    <input type="text" class="form-control search-form__input" id="summonerName" placeholder="소환사명"
+                        name="summoner_name">
+                    <button type="submit" class="search-form__button">
+                        GO
+                    </button>
+                </form>
+            </div>
+        </div>
+        {% if error_message %}
+        <div class="row">
+            <div class="col">
+                <div class="search-form__error">
+                    {{ error_message }}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock content %}

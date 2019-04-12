@@ -124,4 +124,3 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 LOL_API_KEY = 'HERE YOUR API KEY'
-LOL_PROFILE_ICON_URL = 'http://ddragon.leagueoflegends.com/cdn/%s/img/profileicon/'

@@ -8,23 +8,33 @@ from django.urls import reverse
 from .models import Summoner
 from .forms import SummonerSearchForm
 
-from urllib.parse import quote
-import requests
+from .utility.api import get_summoner_data_by_api
 
 
 def index(request):
     return render(request, 'main/index.html')
 
 
-def get_summoner_data_by_api(name):
-    params = {
-        'api_key': settings.LOL_API_KEY
-    }
-    url = 'https://kr.api.riotgames.com/lol/summoner/v4/summoners/by-name/'
-    url = url + quote(name)
-    response = requests.get(url, params=params)
-    
-    return response
+def get_summoner_data_by_name(name):
+    summoner_model = None
+    try:
+        summoner_model = Summoner.objects.get(pk=name)
+    except Summoner.DoesNotExist:
+        response = get_summoner_data_by_api(name)
+        if response.status_code == 404:
+            return None
+
+        summoner_data = response.json()
+        summoner_model = Summoner(name=summoner_data['name'],
+                            encryptedId=summoner_data['id'],
+                            puuid=summoner_data['puuid'],
+                            accountId=summoner_data['accountId'],
+                            iconId=summoner_data['profileIconId'],
+                            level=summoner_data['summonerLevel'])
+        summoner_model.save()
+
+    return summoner_model
+
 
 def get_summoner(request):
     try:
@@ -34,43 +44,24 @@ def get_summoner(request):
             'error_message': "정상적인 접근이 아닙니다."
         })
 
-    response = get_summoner_data_by_api(name)
-    if response.status_code == 404:
+    summoner = get_summoner_data_by_name(name)
+    if summoner is None:
         return render(request, 'main/index.html', {
             'error_message': "등록되지 않은 소환사입니다."
         })
 
-    summonerData = response.json()
-    summoner = Summoner(name=summonerData['name'],
-                        encryptedId=summonerData['id'],
-                        puuid=summonerData['puuid'],
-                        accountId=summonerData['accountId'],
-                        iconId=summonerData['profileIconId'],
-                        level=summonerData['summonerLevel'])
-    summoner.save()
     return HttpResponseRedirect(reverse('main:summoner', args=[name]))
 
 
 def summoner(request, name):
-    try:
-        summoner = Summoner.objects.get(pk=name)
-    except Summoner.DoesNotExist:
-        response = get_summoner_data_by_api(name)
-        if response.status_code == 404:
-            return render(request, 'main/index.html', {
-                'error_message': "등록되지 않은 소환사입니다."
-            })
+    summoner_model = get_summoner_data_by_name(name)
+    if summoner_model is None:
+        return render(request, 'main/index.html', {
+            'error_message': "등록되지 않은 소환사입니다."
+        })
 
-        summonerData = response.json()
-        summoner = Summoner(name=summonerData['name'],
-                            encryptedId=summonerData['id'],
-                            puuid=summonerData['puuid'],
-                            accountId=summonerData['accountId'],
-                            iconId=summonerData['profileIconId'],
-                            level=summonerData['summonerLevel'])
-        summoner.save()
-
-    summonerClientData = summoner.get_client_data()
+    summonerClientData = summoner_model.get_client_data()
+    championMasteries = summoner_model
     return render(request, 'main/summoner.html', {
         'summoner_data': summonerClientData,
     })

@@ -1,6 +1,7 @@
 from django.db import models
-from django.conf import settings
+from .constants import LOL_URL
 import requests
+
 
 class Summoner(models.Model):
     name = models.CharField(max_length=20, primary_key=True)
@@ -16,9 +17,9 @@ class Summoner(models.Model):
         if response.status_code == 200:
             versionData = response.json()
             latestVersion = versionData[0]
-        
+
         return {
             'name': self.name,
             'level': self.level,
-            'icon_url': (settings.LOL_PROFILE_ICON_URL % latestVersion) + str(self.iconId) + '.png'
+            'icon_url': (LOL_URL['PROFILE_ICON'] % latestVersion) + str(self.iconId) + '.png'
         }

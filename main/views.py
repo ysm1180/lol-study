@@ -6,7 +6,6 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 
 from .models import Summoner
-from .forms import SummonerSearchForm
 
 from .utility.api import get_summoner_data_by_api
 

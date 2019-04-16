@@ -4,7 +4,16 @@ from django.conf import settings
 
 import requests
 
-from main.constants import LOL_API
+from main.settings import LOL_API, LOL_URL
+
+def get_lol_last_version():
+    response = requests.get(LOL_URL['VERSION'])
+    latestVersion = '9.7.1'
+    if response.status_code == 200:
+        versionData = response.json()
+        latestVersion = versionData[0]
+    
+    return latestVersion
 
 def call_lol_api(url):
     params = {

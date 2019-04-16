@@ -3,20 +3,22 @@
 LOL tool is for django study.
 
 ## Getting started
-The project use Requests. To install Requests, simply use pip:
+The project use django, requests. To install these packages, simply use pip:
 ```
-pip install requests
+pip install -r requirements.txt
 ```
-
 
 To deploy this site, you must get LOL Develoment API key in https://developer.riotgames.com/.
+After you get the api key, modify `LOL_API_KEY` in `secrets.json`
 
-After you get the api key, modify `LOL_API_KEY` in `lolsite/settings.py`
+In addition, move django secert key from settings.py to secrets.json. 
+you can find `SECRET_KEY` in `secrets.json` not `lolsite/settings.py`
 
-```python
-lolsite/settings.py
-
-LOL_API_KEY = [HERE YOUR API KEY]
+```json
+{
+    "SECRET_KEY": "HERE YOUR SECRET KEY",
+    "LOL_API_KEY": "HERE YOUR API KEY"
+}
 ```
 
 ## Database Migration
@@ -31,5 +33,5 @@ $ python manage.py migrate
 
 ## Development
 ```
-$ python manage.py runserver
+$ python manage.py runserver [:port]
 ```

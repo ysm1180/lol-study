@@ -138,4 +138,7 @@ dmypy.json
 # Visual studio code
 .vscode/
 
+secrets.json
+migrations/
+
 # End of https://www.gitignore.io/api/django

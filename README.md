@@ -11,8 +11,8 @@ pip install -r requirements.txt
 To deploy this site, you must get LOL Develoment API key in https://developer.riotgames.com/.
 After you get the api key, modify `LOL_API_KEY` in `secrets.json`
 
-In addition, move django secert key from settings.py to secrets.json. 
-you can find `SECRET_KEY` in `secrets.json` not `lolsite/settings.py`
+In addition, the project has django secert key in `secrets.json` not `lolsite/settings.py`. 
+you can find `SECRET_KEY` in `secrets.json` and put your django secret key.
 
 ```json
 {

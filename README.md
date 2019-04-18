@@ -24,10 +24,9 @@ you can find `SECRET_KEY` in `secrets.json` and put your django secret key.
 ## Database Migration
 
 Default database in the project is sqlite3.
-To migragte database, run `makemigrations` and `migrate`.
+To migragte database and save default static data, run `python manage.py migrate`.
 
 ```bash
-$ python manage.py makemigrations main
 $ python manage.py migrate 
 ```
 

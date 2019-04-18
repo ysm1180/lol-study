@@ -139,6 +139,5 @@ dmypy.json
 .vscode/
 
 secrets.json
-migrations/
-
+champion_*.json
 # End of https://www.gitignore.io/api/django

@@ -16,19 +16,19 @@ def make_static_champion_data(data, path):
 
 
 def load_champion_info(apps, schema_editor):
-    staticChampionDataPath = os.path.join(
+    static_champion_data_path = os.path.join(
         PROJECT_PATH, 'static/champion_KR.json')
-    if not os.path.exists(staticChampionDataPath):
+    if not os.path.exists(static_champion_data_path):
         version = get_lol_last_version()
         response = requests.get((LOL_URL['STATIC_CHAMPION_DATA'] % version))
         if response.status_code == 200:
-            make_static_champion_data(response.json(), staticChampionDataPath)
+            make_static_champion_data(response.json(), static_champion_data_path)
     else:
-        with open(staticChampionDataPath) as jsonFile:
-            jsonData = json.load(jsonFile)
+        with open(static_champion_data_path) as json_file:
+            json_data = json.load(json_file)
 
     Champion = apps.get_model('main', 'Champion')
-    for key, value in jsonData['data'].items():
+    for key, value in json_data['data'].items():
         try:
             champion = Champion.objects.get(pk=int(value['key']))
         except Champion.DoesNotExist:

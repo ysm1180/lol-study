@@ -1,6 +1,5 @@
 from django.contrib import admin
-
-from .models import Summoner
+from main.models import Summoner
 
 admin.site.register(Summoner)
 

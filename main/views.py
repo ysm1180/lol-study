@@ -24,11 +24,16 @@ def get_champion_mastery(id):
             if summoner_model is None:
                 continue
 
+            try:
+                champion_model = Champion.objects.get(pk=champoin_mastery['championId'])
+            except Champion.DoesNotExist:
+                continue
+
             champion_mastery_model = ChampionMastery(
                 summoner=summoner_model,
-                champion=champoin_mastery['championId'],
+                champion=champion_model,
                 level=champoin_mastery['championLevel'],
-                point=champoin_mastery['championPoints'],
+                points=champoin_mastery['championPoints'],
                 last_play_time=champoin_mastery['lastPlayTime'],
                 tokens_earned=champoin_mastery['tokensEarned'])
 
@@ -96,7 +101,7 @@ def summoner(request, name):
         return render(request, 'main/index.html',
                       {'error_message': "등록되지 않은 소환사입니다."})
 
-    champion_masteries_model = get_champion_mastery(summoner_model.encryptedId)
+    champion_masteries_model = get_champion_mastery(summoner_model.encrypted_id)
     if champion_masteries_model is None:
         return render(request, 'main/index.html',
                       {'error_message': "정보를 불러오는데에 문제가 생겼습니다."})

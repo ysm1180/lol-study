@@ -25,11 +25,16 @@ def call_lol_api(url):
 def get_summoner_data_by_api(name):
     url = (LOL_API['GET_SUMMONER_BY_NAME'] % quote(name))
     response = call_lol_api(url)
-    
-    return response
+    if response.status_code == 404:
+        return None
 
-def get_champion_masteries(encryptedId):
+    return response.json()
+
+def get_champion_masteries_data_by_api(encryptedId):
     url = (LOL_API['GET_CHAMPION_MASTERIES'] % quote(encryptedId))
     response = call_lol_api(url)
     
-    return response
+    if response.status_code == 404:
+        return None
+
+    return response.json()

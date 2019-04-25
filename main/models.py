@@ -103,11 +103,26 @@ class Match(models.Model):
         else:
             diff_format = ('%d일 전' % int(second_diff / 86400))
 
+        if self.queue == 450:
+            queue_type = '칼바람'
+        elif self.queue == 420:
+            queue_type = '솔랭'
+        elif self.queue == 430:
+            queue_type = '일반'
+        elif self.queue == 440:
+            queue_type = '자유랭'
+
         return {
-            'champion_name': champion_info['name'],
-            'champion_icon_url': (LOL_URL['CHAMPION_ICON'] % (version, champion_info['id'])),
-            'queue': self.queue,
-            'time': diff_format,
-            'role': self.role,
-            'lane': self.lane,
+            'champion_name':
+            champion_info['name'],
+            'champion_icon_url':
+            (LOL_URL['CHAMPION_ICON'] % (version, champion_info['id'])),
+            'queue':
+            queue_type,
+            'time':
+            diff_format,
+            'role':
+            self.role,
+            'lane':
+            self.lane,
         }

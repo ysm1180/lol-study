@@ -75,3 +75,10 @@ body {
 .match-list .match .title .timestamp {
   color: #787c81;
 }
+
+.divide {
+  display: block;
+  height: 2px;
+  background: #F8F8F8;
+  margin: 4px 0;
+}

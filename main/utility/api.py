@@ -7,16 +7,28 @@ from main.settings import LOL_API, LOL_URL
 
 
 def get_lol_last_version():
-    response = requests.get(LOL_URL['VERSION'])
-    latestVersion = None
-    if response.status_code == 200:
-        versionData = response.json()
-        latestVersion = versionData[0]
+    # from main.models import Version
 
-    if latestVersion is None:
-        raise ValueError('version is None')
+    # versions = Version.objects.order_by('-id')
+    # if len(versions) == 0:
+    #     response = requests.get(LOL_URL['VERSION'])
+    #     latestVersion = None
+    #     if response.status_code == 200:
+    #         versionData = response.json()
+    #         latestVersion = versionData[0]
 
-    return latestVersion
+    #     if latestVersion is None:
+    #         raise ValueError('version is None')
+
+    #     Version(version=latestVersion).save()
+
+    # else:
+    #     latestVersion = versions[0].version
+
+    # return latestVersion
+
+    # TODO: save to db and improve to speed up.
+    return "9.8.1"
 
 
 def call_lol_api(url, additional_params={}):

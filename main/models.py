@@ -1,16 +1,20 @@
+import time
+
 import requests
 from django.db import models
+
 from main.settings import LOL_URL, PROJECT_PATH
 from main.utility.api import get_lol_last_version
+from main.utility.champion import load_champion_info
 
 
 class Summoner(models.Model):
     # https://developer.riotgames.com/api-methods/#summoner-v4/GET_getBySummonerName
 
     name = models.CharField(max_length=20, primary_key=True)
-    encrypted_id = models.CharField(max_length=63, unique=True)
+    encrypted_id = models.CharField(max_length=63, unique=True, db_index=True)
+    account_id = models.CharField(max_length=56, unique=True, db_index=True)
     puuid = models.CharField(max_length=78)
-    account_id = models.CharField(max_length=56)
     level = models.IntegerField(default=0)
     icon_id = models.IntegerField(default=0)
 
@@ -25,8 +29,8 @@ class Summoner(models.Model):
             self.name,
             'level':
             self.level,
-            'icon_url': (LOL_URL['PROFILE_ICON'] % latest_version) +
-            str(self.icon_id) + '.png'
+            'icon_url':
+            (LOL_URL['PROFILE_ICON'] % (latest_version, str(self.icon_id))),
         }
 
 
@@ -54,5 +58,56 @@ class ChampionMastery(models.Model):
     last_play_time = models.BigIntegerField(default=0)
 
     class Meta:
-        # create unique index
+        app_label = 'main'
         unique_together = (('summoner', 'champion'), )
+
+    def get_client_data(self):
+        champion_info = load_champion_info(self.champion.id)
+        return {
+            'level': self.level,
+            'points': self.points,
+            'last_play_time': self.last_play_time,
+        }
+
+
+class Match(models.Model):
+    summoner = models.ForeignKey(Summoner,
+                                 to_field='account_id',
+                                 db_column='account_id',
+                                 on_delete=models.CASCADE)
+    champion = models.ForeignKey(Champion, on_delete=models.CASCADE)
+    game_id = models.BigIntegerField(default=0)
+    queue = models.IntegerField(default=0)
+    timestamp = models.BigIntegerField(default=0)
+    season = models.IntegerField(default=0)
+    platform = models.CharField(max_length=2)
+    role = models.CharField(max_length=16)
+    lane = models.CharField(max_length=16)
+
+    class Meta:
+        app_label = 'main'
+        unique_together = (('summoner', 'game_id'), )
+
+    def get_client_data(self):
+        version = get_lol_last_version()
+        champion_info = load_champion_info(self.champion.id)
+
+        second_diff = (int(round(time.time() * 1000)) - self.timestamp) / 1000
+        diff_format = ''
+        if second_diff < 60:
+            diff_format = ('%d초 전' % second_diff)
+        elif second_diff < 3600:
+            diff_format = ('%d분 전' % int(second_diff / 60))
+        elif second_diff < 86400:
+            diff_format = ('%d시간 전' % int(second_diff / 3600))
+        else:
+            diff_format = ('%d일 전' % int(second_diff / 86400))
+
+        return {
+            'champion_name': champion_info['name'],
+            'champion_icon_url': (LOL_URL['CHAMPION_ICON'] % (version, champion_info['id'])),
+            'queue': self.queue,
+            'time': diff_format,
+            'role': self.role,
+            'lane': self.lane,
+        }

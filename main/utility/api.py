@@ -8,18 +8,31 @@ from main.settings import LOL_API, LOL_URL
 
 def get_lol_last_version():
     response = requests.get(LOL_URL['VERSION'])
-    latestVersion = '9.7.1'
+    latestVersion = None
     if response.status_code == 200:
         versionData = response.json()
         latestVersion = versionData[0]
 
+    if latestVersion is None:
+        raise ValueError('version is None')
+
     return latestVersion
 
 
-def call_lol_api(url):
+def call_lol_api(url, additional_params={}):
     params = {'api_key': settings.LOL_API_KEY}
+    params.update(additional_params)
     response = requests.get(url, params=params)
     return response
+
+
+def call_summoner_api_by_account_id(account_id):
+    url = (LOL_API['GET_SUMMONER_BY_ACCOUNT_ID'] % quote(account_id))
+    response = call_lol_api(url)
+    if response.status_code == 404:
+        return None
+
+    return response.json()
 
 
 def call_summoner_api_by_id(id):
@@ -40,9 +53,19 @@ def call_summoner_api_by_name(name):
     return response.json()
 
 
-def get_champion_masteries_data_by_api(encryptedId):
-    url = (LOL_API['GET_CHAMPION_MASTERIES'] % quote(encryptedId))
+def call_champion_masteries_api_by_id(encrypted_id):
+    url = (LOL_API['GET_CHAMPION_MASTERIES'] % quote(encrypted_id))
     response = call_lol_api(url)
+
+    if response.status_code == 404:
+        return None
+
+    return response.json()
+
+
+def call_match_list_api_by_account_id(account_id, start, end):
+    url = (LOL_API['GET_MATCH_LIST_BY_ACCOUNT_ID'] % quote(account_id))
+    response = call_lol_api(url, {'beginIndex': start, 'endIndex': end})
 
     if response.status_code == 404:
         return None

@@ -1,21 +1,63 @@
 # -*- coding:utf-8 -*-
 
-from django.shortcuts import render, render_to_response
 from django.conf import settings
 from django.http import HttpResponseRedirect
+from django.shortcuts import render, render_to_response
 from django.urls import reverse
-from main.models import Summoner, Champion, ChampionMastery
-from main.utility.api import call_summoner_api_by_name, get_champion_masteries_data_by_api
+
+from main.models import Champion, ChampionMastery, Match, Summoner
+from main.utility.api import (call_champion_masteries_api_by_id,
+                              call_match_list_api_by_account_id,
+                              call_summoner_api_by_account_id,
+                              call_summoner_api_by_id,
+                              call_summoner_api_by_name)
 
 
 def index(request):
     return render(request, 'main/index.html')
 
 
+def get_champion_match_list(account_id, start, end):
+    matches = Match.objects.filter(
+        summoner_id=account_id).order_by('-timestamp')[start:end]
+    if len(matches) == 0:
+        matches = []
+
+        match_list = call_match_list_api_by_account_id(account_id, 0, 100)
+        if match_list is None:
+            return None
+
+        for match in match_list['matches']:
+            summoner_model = get_summoner_data_by_account_id(account_id)
+            if summoner_model is None:
+                continue
+
+            try:
+                champion_model = Champion.objects.get(pk=match['champion'])
+            except Champion.DoesNotExist:
+                continue
+
+            match_model = Match(summoner=summoner_model,
+                                champion=champion_model,
+                                game_id=match['gameId'],
+                                platform=match['platformId'],
+                                queue=match['queue'],
+                                season=match['season'],
+                                role=match['role'],
+                                lane=match['lane'],
+                                timestamp=match['timestamp'])
+
+            match_model.save()
+            matches.append(match_model)
+
+    return matches
+
+
 def get_champion_mastery(id):
-    champion_mastery_model = ChampionMastery.objects.filter(summoner=id)
-    if len(champion_mastery_model) == 0:
-        champion_mastery_data = get_champion_masteries_data_by_api(id)
+    champion_masteries = ChampionMastery.objects.filter(summoner_id=id)
+    if len(champion_masteries) == 0:
+        champion_masteries = []
+        champion_mastery_data = call_champion_masteries_api_by_id(id)
         if champion_mastery_data is None:
             return None
 
@@ -25,7 +67,8 @@ def get_champion_mastery(id):
                 continue
 
             try:
-                champion_model = Champion.objects.get(pk=champoin_mastery['championId'])
+                champion_model = Champion.objects.get(
+                    pk=champoin_mastery['championId'])
             except Champion.DoesNotExist:
                 continue
 
@@ -39,7 +82,28 @@ def get_champion_mastery(id):
 
             champion_mastery_model.save()
 
-    return champion_mastery_model
+            champion_masteries.append(champion_mastery_model)
+
+    return champion_masteries
+
+
+def get_summoner_data_by_account_id(account_id):
+    try:
+        summoner_model = Summoner.objects.get(account_id=account_id)
+    except Summoner.DoesNotExist:
+        summoner_data = call_summoner_api_by_account_id(account_id)
+        if summoner_data is None:
+            return None
+
+        summoner_model = Summoner(name=summoner_data['name'],
+                                  encrypted_id=summoner_data['id'],
+                                  puuid=summoner_data['puuid'],
+                                  account_id=summoner_data['accountId'],
+                                  icon_id=summoner_data['profileIconId'],
+                                  level=summoner_data['summonerLevel'])
+        summoner_model.save()
+
+    return summoner_model
 
 
 def get_summoner_data_by_id(encrypted_id):
@@ -101,12 +165,21 @@ def summoner(request, name):
         return render(request, 'main/index.html',
                       {'error_message': "등록되지 않은 소환사입니다."})
 
-    champion_masteries_model = get_champion_mastery(summoner_model.encrypted_id)
-    if champion_masteries_model is None:
+    champion_mastery_model_list = get_champion_mastery(
+        summoner_model.encrypted_id)
+    if champion_mastery_model_list is None:
         return render(request, 'main/index.html',
                       {'error_message': "정보를 불러오는데에 문제가 생겼습니다."})
+
+    match_model_list = get_champion_match_list(summoner_model.account_id, 0,
+                                               20)
+
+    matches = []
+    for match_model in match_model_list:
+        matches.append(match_model.get_client_data())
 
     summoner_client_data = summoner_model.get_client_data()
     return render(request, 'main/summoner.html', {
         'summoner_data': summoner_client_data,
+        'match_list': matches,
     })

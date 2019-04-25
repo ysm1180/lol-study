@@ -21,4 +21,22 @@
     </div>
 </div>
 
+<div class="row match-list">
+    <div class="col">
+        {% for match in match_list %}
+        <div class="row match">
+            <div class="col">
+                <div class="title">
+                    <div class="lose">패배</div>
+                    <div class="win">승리</div>
+                    <br>
+                    <div class="timestamp">{{match.time}}</div>
+                </div>
+                <img src={{ match.champion_icon_url }} width="48" height="48">
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
 {% endblock content %}

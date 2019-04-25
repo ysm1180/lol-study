@@ -1,41 +1,77 @@
-html, body {
-    height: 100%;
-    background-color: #F8F8F8;
+html,
+body {
+  height: 100%;
+  background-color: #f8f8f8;
+  font-family: "Roboto", sans-serif;
+}
 
-    font-family: 'Roboto', sans-serif;
+.profile {
+  margin: 20px;
 }
 
 .profile > .icon {
-    position: relative;
-    display: inline-block;
+  position: relative;
+  display: inline-block;
 }
 
 .profile > .icon > .level {
-    position: absolute;
-    top: 100%;
-    text-align: center;
-    width: 50px;
-    left: 50%;
-    margin-left: -25px;
-    margin-top: -5px;
-    color: #4AA4A5;
-    font-size: 14px;
-    font-weight: bold;
-    border: 2px solid black;
-    border-radius: 5px;
+  position: absolute;
+  top: 100%;
+  text-align: center;
+  width: 50px;
+  left: 50%;
+  margin-left: -25px;
+  margin-top: -5px;
+  color: #c69a1c;
+  font-size: 14px;
+  font-weight: bold;
+  border: 2px solid #c69a1c;
+  border-radius: 5px;
+  background-color: #2d3549;
 }
 
 .profile > .info {
-    display: inline-block;
-    position: relative;
-    
-    height: 100px;
-    vertical-align: top;
-    margin: 0 10px;
+  display: inline-block;
+  position: relative;
+  height: 100px;
+  vertical-align: top;
+  margin: 0 10px;
 }
 
 .profile > .info > .name {
-    font-size: 16px;
-    font-weight: bold;
+  font-size: 16px;
+  font-weight: bold;
 }
 
+.match-list {
+  padding: 1em;
+}
+
+.match-list .match {
+  padding: 0.5em 0;
+  margin: 1em 0;
+  border: 1px solid #cdd2d2;
+  background-color: #0c1a25;
+}
+
+.match-list .match .title {
+  width: 60px;
+  display: inline-block;
+  color: white;
+  font-size: 12px;
+  vertical-align: middle;
+}
+
+.match-list .match .title .win {
+  color: #33a3f3;
+  font-weight: bold;
+}
+
+.match-list .match .title .lose {
+  color: #f4564f;
+  font-weight: bold;
+}
+
+.match-list .match .title .timestamp {
+  color: #787c81;
+}

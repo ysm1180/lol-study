@@ -140,4 +140,6 @@ dmypy.json
 
 secrets.json
 champion_*.json
+*/static/*/*.json
+
 # End of https://www.gitignore.io/api/django

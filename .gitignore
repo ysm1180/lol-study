@@ -135,11 +135,12 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
+# End of https://www.gitignore.io/api/django
+
 # Visual studio code
 .vscode/
 
+# Json data
 secrets.json
 champion_*.json
 */data/*/*.json
-
-# End of https://www.gitignore.io/api/django

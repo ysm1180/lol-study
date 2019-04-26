@@ -78,7 +78,7 @@ class Match(models.Model):
     champion = models.ForeignKey(Champion, on_delete=models.CASCADE)
     game_id = models.BigIntegerField(default=0)
     queue = models.IntegerField(default=0)
-    timestamp = models.BigIntegerField(default=0)
+    timestamp = models.BigIntegerField(default=0, db_index=True)
     season = models.IntegerField(default=0)
     platform = models.CharField(max_length=2)
     role = models.CharField(max_length=16)

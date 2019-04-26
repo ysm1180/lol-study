@@ -1,34 +1,29 @@
 from urllib.parse import quote
+
+import redis
+import requests
 from django.conf import settings
 
-import requests
-
 from main.settings import LOL_API, LOL_URL
-
+from main.utility.redis_client import REDIS_CONNECTION_POOL
 
 def get_lol_last_version():
-    # from main.models import Version
+    r = redis.Redis(connection_pool=REDIS_CONNECTION_POOL)
+    version = r.get('VERSION')
+    if version is None:
+        response = requests.get(LOL_URL['VERSION'])
+        version = None
+        if response.status_code == 200:
+            versionData = response.json()
+            version = versionData[0]
+            r.set('VERSION', version.encode('utf-8'), 86400)
 
-    # versions = Version.objects.order_by('-id')
-    # if len(versions) == 0:
-    #     response = requests.get(LOL_URL['VERSION'])
-    #     latestVersion = None
-    #     if response.status_code == 200:
-    #         versionData = response.json()
-    #         latestVersion = versionData[0]
-
-    #     if latestVersion is None:
-    #         raise ValueError('version is None')
-
-    #     Version(version=latestVersion).save()
-
-    # else:
-    #     latestVersion = versions[0].version
-
-    # return latestVersion
-
-    # TODO: save to db and improve to speed up.
-    return "9.8.1"
+        if version is None:
+            raise ValueError('version data does not exist.')
+    else:
+        version = version.decode('utf-8')
+    
+    return version
 
 
 def call_lol_api(url, additional_params={}):

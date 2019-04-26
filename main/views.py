@@ -17,6 +17,8 @@ def index(request):
     return render(request, 'main/index.html')
 
 
+cache_champion_models = {}
+
 def get_champion_match_list(account_id, start, end):
     matches = Match.objects.filter(
         summoner_id=account_id).order_by('-timestamp')[start:end]
@@ -27,13 +29,16 @@ def get_champion_match_list(account_id, start, end):
         if match_list is None:
             return None
 
+        summoner_model = get_summoner_data_by_account_id(account_id)
+        if summoner_model is None:
+            return None
         for match in match_list['matches']:
-            summoner_model = get_summoner_data_by_account_id(account_id)
-            if summoner_model is None:
-                continue
-
             try:
-                champion_model = Champion.objects.get(pk=match['champion'])
+                if match['champion'] in cache_champion_models.keys():
+                    champion_model = cache_champion_models[match['champion']]
+                else:
+                    champion_model = Champion.objects.get(pk=match['champion'])
+                    cache_champion_models[match['champion']] = champion_model
             except Champion.DoesNotExist:
                 continue
 
@@ -47,8 +52,8 @@ def get_champion_match_list(account_id, start, end):
                                 lane=match['lane'],
                                 timestamp=match['timestamp'])
 
-            match_model.save()
             matches.append(match_model)
+        Match.objects.bulk_create(matches)
 
     return matches
 
@@ -61,14 +66,21 @@ def get_champion_mastery(id):
         if champion_mastery_data is None:
             return None
 
-        for champoin_mastery in champion_mastery_data:
-            summoner_model = get_summoner_data_by_id(id)
-            if summoner_model is None:
-                continue
+        summoner_model = get_summoner_data_by_id(id)
+        if summoner_model is None:
+            return None
 
+        for champoin_mastery in champion_mastery_data:
             try:
-                champion_model = Champion.objects.get(
-                    pk=champoin_mastery['championId'])
+                if champoin_mastery['championId'] in cache_champion_models.keys():
+                    champion_model = cache_champion_models[
+                        champoin_mastery['championId']]
+                else:
+                    champion_model = Champion.objects.get(
+                        pk=champoin_mastery['championId'])
+                    cache_champion_models[
+                        champoin_mastery['championId']] = champion_model
+
             except Champion.DoesNotExist:
                 continue
 
@@ -80,9 +92,8 @@ def get_champion_mastery(id):
                 last_play_time=champoin_mastery['lastPlayTime'],
                 tokens_earned=champoin_mastery['tokensEarned'])
 
-            champion_mastery_model.save()
-
             champion_masteries.append(champion_mastery_model)
+        ChampionMastery.objects.bulk_create(champion_masteries)
 
     return champion_masteries
 
@@ -164,6 +175,11 @@ def summoner(request, name):
     if summoner_model is None:
         return render(request, 'main/index.html',
                       {'error_message': "등록되지 않은 소환사입니다."})
+
+    if len(cache_champion_models) == 0:
+        champions = Champion.objects.all()
+        for champion in champions:
+            cache_champion_models[champion.key] = champion
 
     champion_mastery_model_list = get_champion_mastery(
         summoner_model.encrypted_id)

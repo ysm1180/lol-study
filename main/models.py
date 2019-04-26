@@ -103,6 +103,7 @@ class Match(models.Model):
         else:
             diff_format = ('%d일 전' % int(second_diff / 86400))
 
+        queue_type = '?'
         if self.queue == 450:
             queue_type = '칼바람'
         elif self.queue == 420:

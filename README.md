@@ -1,9 +1,9 @@
 # LOL TOOL
 
-LOL tool is for django study.
+LOL tool is for django study project.
 
 ## Getting started
-The project use django, requests. To install these packages, simply use pip:
+To install the packages to test the project, simply use pip:
 ```
 pip install -r requirements.txt
 ```
@@ -30,7 +30,42 @@ To migragte database and save default static data, run `python manage.py migrate
 $ python manage.py migrate 
 ```
 
-## Development
+
+
+## Celery & Redis
+Redis is required to use Celery. The redis connection information is in `lolsite/settings.py`.
+
+Default setting is localhost:6379.
+```python
+# REDIS related settings
+REDIS_HOST = 'localhost'
+REDIS_PORT = '6379'
+```
+
+The project has a daily schedule for updating champion infomation.
+In `lolsite/celery.py`, you can modify the schedule.
+```python
+app.conf.beat_schedule = {
+    'update-champion-info-every-day': {
+        'task': 'main.tasks.update_champion_info',
+        'schedule': crontab(minute=0, hour=0),
+        'args': (),
+    },
+}
+```
+
+To start the celery worker:
+```bash
+$ celery -A lolsite worker -l info
+```
+
+To start the celery schedule service:
+```bash
+$ celery -A lolsite beat
+```
+
+
+## Run
 ```
 $ python manage.py runserver [:port]
 ```

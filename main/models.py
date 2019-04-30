@@ -97,11 +97,11 @@ class Match(models.Model):
         if second_diff < 60:
             diff_format = ('%d초 전' % second_diff)
         elif second_diff < 3600:
-            diff_format = ('%d분 전' % int(second_diff / 60))
+            diff_format = ('%d분 전' % math.ceil(second_diff / 60))
         elif second_diff < 86400:
-            diff_format = ('%d시간 전' % int(second_diff / 3600))
+            diff_format = ('%d시간 전' % math.ceil(second_diff / 3600))
         else:
-            diff_format = ('%d일 전' % int(second_diff / 86400))
+            diff_format = ('%d일 전' % math.ceil(second_diff / 86400))
 
         queue_type = '?'
         if self.queue == 450:
@@ -121,6 +121,10 @@ class Match(models.Model):
             'queue':
             queue_type,
             'time':
+            datetime.fromtimestamp(self.timestamp / 1000).strftime(
+                "%Y년 %m월 %d일 %p %I시 %M분".encode('unicode-escape').decode(
+                )).encode().decode('unicode-escape'),
+            'diff_time':
             diff_format,
             'role':
             self.role,

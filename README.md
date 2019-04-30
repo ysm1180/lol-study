@@ -24,6 +24,21 @@ you can find `SECRET_KEY` in `secrets.json` and put your django secret key.
 ## Database Migration
 
 Default database in the project is postgres.
+
+```python
+# lolsite/setting.py
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': '[DB NAME]',
+        'USER': '[DB USER NAME]',
+        'PASSWORD' : '[DB PASSWORD]',
+        'HOST': '[DB HOST NAME]',
+        'PORT': '[DB PORT]',
+    }
+}
+```
+
 To migragte database and save default static data, run `python manage.py migrate`.
 
 ```bash

@@ -42,7 +42,7 @@ def migrate_champion_info(apps, schema_editor):
             champion_model = ChampionModel(key=int(value['key']), id=key)
             champion_model.save()
 
-        champion_data_path = os.path.join(version_path, key + '.json')
+        champion_data_path = os.path.join(version_path, str(value['key']) + '.json')
         if not os.path.exists(champion_data_path):
             response = requests.get(
                 (LOL_URL['STATIC_CHAMPION_DATA'] % (version, key)))

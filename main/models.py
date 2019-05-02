@@ -62,7 +62,7 @@ class ChampionMastery(models.Model):
         unique_together = (('summoner', 'champion'), )
 
     def get_client_data(self):
-        champion_info = load_champion_info(self.champion.id)
+        champion_info = load_champion_info(self.champion_id)
         return {
             'level': self.level,
             'points': self.points,
@@ -90,7 +90,7 @@ class Match(models.Model):
 
     def get_client_data(self):
         version = get_lol_last_version()
-        champion_info = load_champion_info(self.champion.id)
+        champion_info = load_champion_info(self.champion_id)
 
         second_diff = (int(round(time.time() * 1000)) - self.timestamp) / 1000
         diff_format = ''

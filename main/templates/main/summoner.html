@@ -27,8 +27,11 @@
         <div class="row match">
             <div class="col-12">
                 <div class="title">
-                    <div class="lose">패배</div>
+                    {% if match.summoner_game.team.is_win %}
                     <div class="win">승리</div>
+                    {% else %}
+                    <div class="lose">패배</div>
+                    {% endif %}
                     <br>
                     <div class="timestamp" data-toggle="tooltip" data-placement="top" title="{{ match.time }}">
                         {{match.diff_time}}

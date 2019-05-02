@@ -18,7 +18,8 @@ def load_champion_info(champion_key):
     version = get_lol_last_version()
     data_folder_path = os.path.join(PROJECT_PATH, 'data')
     version_path = os.path.join(data_folder_path, version)
-    champion_data_path = os.path.join(version_path, str(champion_key) + '.json')
+    champion_data_path = os.path.join(version_path,
+                                      str(champion_key) + '.json')
 
     if not os.path.exists(champion_data_path):
         raise FileNotFoundError('the %d champion data does not exist.' %

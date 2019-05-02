@@ -7,7 +7,7 @@ from lolsite.celery import app
 from main.models import Champion
 from main.settings import LOL_URL, PROJECT_PATH
 from main.utility.api import get_lol_last_version
-from main.utility.champion import make_json_file
+from main.utility.util import make_json_file
 
 
 @app.task

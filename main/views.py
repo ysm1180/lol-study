@@ -309,7 +309,7 @@ def summoner(request, name):
             games[game_model.game_id] = {
                 'game': game_model.get_client_data(),
                 'teams': {},
-                'participants': {},
+                'participants': [],
             }
 
         for team_model in team_models:
@@ -318,9 +318,7 @@ def summoner(request, name):
 
         summoner_game_data = {}
         for participant_model in participant_models:
-            games[participant_model.game_id]['participants'][
-                participant_model.
-                participant_id] = participant_model.get_client_data()
+            games[participant_model.game_id]['participants'].append(participant_model.get_client_data())
 
             if summoner_model.encrypted_id == participant_model.summoner_id:
                 summoner_game = {'team': {}, 'participant': {}}

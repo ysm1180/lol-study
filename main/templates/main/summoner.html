@@ -37,10 +37,137 @@
                         {{match.diff_time}}
                     </div>
                 </div>
-                <img src={{ match.champion_icon_url }} width="48" height="48">
-                <div class="spell">
-                    <img src={{ match.summoner_game.participant.spell_1_icon_url }} width="24" height="24">
-                    <img src={{ match.summoner_game.participant.spell_2_icon_url }} width="24" height="24">
+                <div class="inline-block champion" data-toggle="tooltip" data-placement="top"
+                    title="{{ match.champion_name }}">
+                    <div class="icon">
+                        <img src={{ match.champion_icon_url }} width="48" height="48">
+                        <span class="level"> {{ match.summoner_game.participant.champion_level }} </span>
+                    </div>
+                </div>
+                <div class="inline-block">
+                    <div>
+                        <img src={{ match.summoner_game.participant.spell_1_icon_url }} width="24" height="24">
+                    </div>
+                    <div>
+                        <img src={{ match.summoner_game.participant.spell_2_icon_url }} width="24" height="24">
+                    </div>
+                </div>
+                <div class="inline-block kda">
+                    {{match.summoner_game.participant.kills }} /
+                    <span class="death">
+                        {{ match.summoner_game.participant.deaths }}
+                    </span>
+                    /
+                    {{ match.summoner_game.participant.assists }}
+                </div>
+                <div class="inline-block item-list">
+                    {% if match.summoner_game.participant.item_0_icon_url == "empty" %}
+                    <div class="item empty">
+                    </div>
+                    {% else %}
+                    <div class="item">
+                        <img class="image" src={{ match.summoner_game.participant.item_0_icon_url }}>
+                    </div>
+                    {% endif %}
+
+                    {% if match.summoner_game.participant.item_1_icon_url == "empty" %}
+                    <div class="item empty">
+                    </div>
+                    {% else %}
+                    <div class="item">
+                        <img class="image" src={{ match.summoner_game.participant.item_1_icon_url }}>
+                    </div>
+                    {% endif %}
+
+                    {% if match.summoner_game.participant.item_2_icon_url == "empty" %}
+                    <div class="item empty">
+                    </div>
+                    {% else %}
+                    <div class="item">
+                        <img class="image" src={{ match.summoner_game.participant.item_2_icon_url }}>
+                    </div>
+                    {% endif %}
+
+                    {% if match.summoner_game.participant.item_6_icon_url == "empty" %}
+                    <div class="item empty">
+                    </div>
+                    {% else %}
+                    <div class="item">
+                        <img class="image" src={{ match.summoner_game.participant.item_6_icon_url }}>
+                    </div>
+                    {% endif %}
+
+                    {% if match.summoner_game.participant.item_3_icon_url == "empty" %}
+                    <div class="item empty">
+                    </div>
+                    {% else %}
+                    <div class="item">
+                        <img class="image" src={{ match.summoner_game.participant.item_3_icon_url }}>
+                    </div>
+                    {% endif %}
+
+                    {% if match.summoner_game.participant.item_4_icon_url == "empty" %}
+                    <div class="item empty">
+                    </div>
+                    {% else %}
+                    <div class="item">
+                        <img class="image" src={{ match.summoner_game.participant.item_4_icon_url }}>
+                    </div>
+                    {% endif %}
+
+                    {% if match.summoner_game.participant.item_5_icon_url == "empty" %}
+                    <div class="item empty">
+                    </div>
+                    {% else %}
+                    <div class="item">
+                        <img class="image" src={{ match.summoner_game.participant.item_5_icon_url }}>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="inline-block participants">
+                    <div class="team {% if match.game.teams.100.is_win %}win{% else %}lose{% endif %}">
+                        {% for participant in match.game.participants %}
+                        {% if participant.team_id == 100 %}
+                        <div class="summoner">
+                            <div class="champion-image">
+                                <img class="image" src={{ participant.champion_icon_url }}>
+                            </div>
+                            {% if participant.summoner_name == match.summoner_game.participant.summoner_name %}
+                            <div class="summoner-name requester">
+                                {{ participant.summoner_name }}
+                            </div>
+                            {% else %}
+                            <div class="summoner-name">
+                                {{ participant.summoner_name }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+
+                        {% endfor %}
+                    </div>
+                    <div class="team {% if match.game.teams.200.is_win %}win{% else %}lose{% endif %}">
+                        {% for participant in match.game.participants %}
+                        {% if participant.team_id == 200 %}
+                        <div class="summoner">
+                            <div class="champion-image">
+                                <img class="image" src={{ participant.champion_icon_url }}>
+                            </div>
+                            {% if participant.summoner_name == match.summoner_game.participant.summoner_name %}
+                            <div class="summoner-name requester">
+                                {{ participant.summoner_name }}
+                            </div>
+                            {% else %}
+                            <div class="summoner-name">
+                                {{ participant.summoner_name }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+
+                        {% endfor %}
+                    </div>
                 </div>
             </div>
             <div class="col-12">

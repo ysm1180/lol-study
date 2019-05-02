@@ -22,8 +22,8 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Summoner',
             fields=[
-                ('name', models.CharField(max_length=20, primary_key=True, serialize=False)),
-                ('encrypted_id', models.CharField(db_index=True, max_length=63, unique=True)),
+                ('name', models.CharField(db_index=True, max_length=64, unique=True)),
+                ('encrypted_id', models.CharField(db_index=True, max_length=63, primary_key=True, serialize=False, unique=True)),
                 ('account_id', models.CharField(db_index=True, max_length=56, unique=True)),
                 ('puuid', models.CharField(max_length=78)),
                 ('level', models.IntegerField(default=0)),
@@ -57,7 +57,7 @@ class Migration(migrations.Migration):
                 ('tokens_earned', models.IntegerField(default=0)),
                 ('last_play_time', models.BigIntegerField(default=0)),
                 ('champion', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='main.Champion')),
-                ('summoner', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='main.Summoner', to_field='encrypted_id')),
+                ('summoner', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='main.Summoner')),
             ],
             options={
                 'unique_together': {('summoner', 'champion')},

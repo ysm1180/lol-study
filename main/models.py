@@ -11,8 +11,11 @@ from main.utility.champion import load_champion_info
 class Summoner(models.Model):
     # https://developer.riotgames.com/api-methods/#summoner-v4/GET_getBySummonerName
 
-    name = models.CharField(max_length=20, primary_key=True)
-    encrypted_id = models.CharField(max_length=63, unique=True, db_index=True)
+    name = models.CharField(max_length=64, unique=True, db_index=True)
+    encrypted_id = models.CharField(max_length=63,
+                                    unique=True,
+                                    db_index=True,
+                                    primary_key=True)
     account_id = models.CharField(max_length=56, unique=True, db_index=True)
     puuid = models.CharField(max_length=78)
     level = models.IntegerField(default=0)

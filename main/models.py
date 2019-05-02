@@ -9,7 +9,7 @@ from django.db import models
 
 from main.settings import LOL_URL, PROJECT_PATH
 from main.utility.api import get_lol_last_version
-from main.utility.champion import load_champion_info
+from main.utility.util import load_champion_info
 
 
 class Champion(models.Model):

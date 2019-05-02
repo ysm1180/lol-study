@@ -25,13 +25,8 @@ def get_champion_match_list(account_id, start, end):
     if len(matches) == 0:
         matches = []
 
-        match_list = call_match_list_api_by_account_id(account_id, 0, 100)
-        if match_list is None:
-            return None
-
+        match_list = call_match_list_api_by_account_id(account_id, 0, 20)
         summoner_model = get_summoner_data_by_account_id(account_id)
-        if summoner_model is None:
-            return None
         for match in match_list['matches']:
             try:
                 if match['champion'] in cache_champion_models.keys():
@@ -40,7 +35,7 @@ def get_champion_match_list(account_id, start, end):
                     champion_model = Champion.objects.get(pk=match['champion'])
                     cache_champion_models[match['champion']] = champion_model
             except Champion.DoesNotExist:
-                continue
+                raise
 
             match_model = Match(summoner=summoner_model,
                                 champion=champion_model,
@@ -63,16 +58,11 @@ def get_champion_mastery(id):
     if len(champion_masteries) == 0:
         champion_masteries = []
         champion_mastery_data = call_champion_masteries_api_by_id(id)
-        if champion_mastery_data is None:
-            return None
-
         summoner_model = get_summoner_data_by_id(id)
-        if summoner_model is None:
-            return None
-
         for champoin_mastery in champion_mastery_data:
             try:
-                if champoin_mastery['championId'] in cache_champion_models.keys():
+                if champoin_mastery[
+                        'championId'] in cache_champion_models.keys():
                     champion_model = cache_champion_models[
                         champoin_mastery['championId']]
                 else:
@@ -103,9 +93,6 @@ def get_summoner_data_by_account_id(account_id):
         summoner_model = Summoner.objects.get(account_id=account_id)
     except Summoner.DoesNotExist:
         summoner_data = call_summoner_api_by_account_id(account_id)
-        if summoner_data is None:
-            return None
-
         summoner_model = Summoner(name=summoner_data['name'],
                                   encrypted_id=summoner_data['id'],
                                   puuid=summoner_data['puuid'],
@@ -119,12 +106,9 @@ def get_summoner_data_by_account_id(account_id):
 
 def get_summoner_data_by_id(encrypted_id):
     try:
-        summoner_model = Summoner.objects.get(encrypted_id=encrypted_id)
+        summoner_model = Summoner.objects.get(pk=encrypted_id)
     except Summoner.DoesNotExist:
         summoner_data = call_summoner_api_by_id(encrypted_id)
-        if summoner_data is None:
-            return None
-
         summoner_model = Summoner(name=summoner_data['name'],
                                   encrypted_id=summoner_data['id'],
                                   puuid=summoner_data['puuid'],
@@ -138,12 +122,9 @@ def get_summoner_data_by_id(encrypted_id):
 
 def get_summoner_data_by_name(name):
     try:
-        summoner_model = Summoner.objects.get(pk=name)
+        summoner_model = Summoner.objects.get(name=name)
     except Summoner.DoesNotExist:
         summoner_data = call_summoner_api_by_name(name)
-        if summoner_data is None:
-            return None
-
         summoner_model = Summoner(name=summoner_data['name'],
                                   encrypted_id=summoner_data['id'],
                                   puuid=summoner_data['puuid'],
@@ -162,19 +143,21 @@ def get_summoner(request):
         return render(request, 'main/index.html',
                       {'error_message': "정상적인 접근이 아닙니다."})
 
+    try:
     summoner = get_summoner_data_by_name(name)
-    if summoner is None:
-        return render(request, 'main/index.html',
+    except requests.exceptions.HTTPError as e:
+        if e.response.status_code == 404:
+            render(request, 'main/index.html',
                       {'error_message': "등록되지 않은 소환사입니다."})
+        else:
+            render(request, 'main/index.html', {'error_message': e.msg})
 
     return HttpResponseRedirect(reverse('main:summoner', args=[name]))
 
 
 def summoner(request, name):
+    try:
     summoner_model = get_summoner_data_by_name(name)
-    if summoner_model is None:
-        return render(request, 'main/index.html',
-                      {'error_message': "등록되지 않은 소환사입니다."})
 
     if len(cache_champion_models) == 0:
         champions = Champion.objects.all()
@@ -199,3 +182,11 @@ def summoner(request, name):
         'summoner_data': summoner_client_data,
         'match_list': matches,
     })
+
+    except requests.exceptions.HTTPError as e:
+        if e.response.status_code == 404:
+            return render(request, 'main/index.html',
+                          {'error_message': "등록되지 않은 소환사입니다."})
+        else:
+            msg = e.response.json()['status']['message']
+            return render(request, 'main/index.html', {'error_message': msg})

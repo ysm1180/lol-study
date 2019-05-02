@@ -194,6 +194,8 @@ class GameTeam(models.Model):
         }
 
 
+cache_spell_ids = {}
+
 class GameParticipant(models.Model):
     game = models.ForeignKey(Game,
                              to_field='game_id',
@@ -229,6 +231,18 @@ class GameParticipant(models.Model):
         version = get_lol_last_version()
         champion_info = load_champion_info(self.champion_id)
 
+        if self.spell_1_id in cache_spell_ids.keys():
+            spell_1_id = cache_spell_ids[self.spell_1_id]
+        else:
+            spell_1_id = self.spell_1.id
+            cache_spell_ids[self.spell_1_id] = spell_1_id
+
+        if self.spell_2_id in cache_spell_ids.keys():
+            spell_2_id = cache_spell_ids[self.spell_2_id]
+        else:
+            spell_2_id = self.spell_2.id
+            cache_spell_ids[self.spell_2_id] = spell_2_id
+
         return {
             'game_id':
             self.game_id,
@@ -243,16 +257,16 @@ class GameParticipant(models.Model):
             'champion_level':
             self.champ_level,
             'spell_1_icon_url':
-            (LOL_URL['SPELL_ICON'] % (version, self.spell_1.id)),
+            (LOL_URL['SPELL_ICON'] % (version, spell_1_id)),
             'spell_2_icon_url':
-            (LOL_URL['SPELL_ICON'] % (version, self.spell_2.id)),
-            'item_0_icon_url': (LOL_URL['ITEM_ICON'] % (version, self.item_0)),
-            'item_1_icon_url': (LOL_URL['ITEM_ICON'] % (version, self.item_1)),
-            'item_2_icon_url': (LOL_URL['ITEM_ICON'] % (version, self.item_2)),
-            'item_3_icon_url': (LOL_URL['ITEM_ICON'] % (version, self.item_3)),
-            'item_4_icon_url': (LOL_URL['ITEM_ICON'] % (version, self.item_4)),
-            'item_5_icon_url': (LOL_URL['ITEM_ICON'] % (version, self.item_5)),
-            'item_6_icon_url': (LOL_URL['ITEM_ICON'] % (version, self.item_6)),
+            (LOL_URL['SPELL_ICON'] % (version, spell_2_id)),
+            'item_0_icon_url': (LOL_URL['ITEM_ICON'] % (version, self.item_0)) if self.item_0 != 0 else 'empty',
+            'item_1_icon_url': (LOL_URL['ITEM_ICON'] % (version, self.item_1)) if self.item_1 != 0 else 'empty',
+            'item_2_icon_url': (LOL_URL['ITEM_ICON'] % (version, self.item_2)) if self.item_2 != 0 else 'empty',
+            'item_3_icon_url': (LOL_URL['ITEM_ICON'] % (version, self.item_3)) if self.item_3 != 0 else 'empty',
+            'item_4_icon_url': (LOL_URL['ITEM_ICON'] % (version, self.item_4)) if self.item_4 != 0 else 'empty',
+            'item_5_icon_url': (LOL_URL['ITEM_ICON'] % (version, self.item_5)) if self.item_5 != 0 else 'empty',
+            'item_6_icon_url': (LOL_URL['ITEM_ICON'] % (version, self.item_6)) if self.item_6 != 0 else 'empty',
             'kills':
             self.kills,
             'deaths':

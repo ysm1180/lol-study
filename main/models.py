@@ -203,11 +203,11 @@ class GameParticipant(models.Model):
     display_summoner_name = models.CharField(max_length=64, db_index=True)
     team_id = models.IntegerField(default=0)
     champion = models.ForeignKey(Champion, on_delete=models.CASCADE)
-    spell_id_1 = models.ForeignKey(Spell,
-                                   related_name='spells_1',
+    spell_1 = models.ForeignKey(Spell,
+                                   related_name='spell_1',
                                    on_delete=models.CASCADE)
-    spell_id_2 = models.ForeignKey(Spell,
-                                   related_name='spells_2',
+    spell_2 = models.ForeignKey(Spell,
+                                   related_name='spell_2',
                                    on_delete=models.CASCADE)
     item_0 = models.IntegerField(default=0)
     item_1 = models.IntegerField(default=0)
@@ -242,8 +242,10 @@ class GameParticipant(models.Model):
             (LOL_URL['CHAMPION_ICON'] % (version, champion_info['id'])),
             'champion_level':
             self.champ_level,
-            'spell_icon_url':
-            (LOL_URL['SPELL_ICON'] % (version, champion_info['id'])),
+            'spell_1_icon_url':
+            (LOL_URL['SPELL_ICON'] % (version, self.spell_1.id)),
+            'spell_2_icon_url':
+            (LOL_URL['SPELL_ICON'] % (version, self.spell_2.id)),
             'item_0_icon_url': (LOL_URL['ITEM_ICON'] % (version, self.item_0)),
             'item_1_icon_url': (LOL_URL['ITEM_ICON'] % (version, self.item_1)),
             'item_2_icon_url': (LOL_URL['ITEM_ICON'] % (version, self.item_2)),

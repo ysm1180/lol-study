@@ -8,6 +8,22 @@ from main.utility.api import get_lol_last_version
 from main.utility.champion import load_champion_info
 
 
+class Champion(models.Model):
+    key = models.IntegerField(default=0, primary_key=True)
+    id = models.CharField(max_length=32)
+
+    class Meta:
+        app_label = 'main'
+
+
+class Spell(models.Model):
+    key = models.IntegerField(default=0, primary_key=True)
+    id = models.CharField(max_length=32)
+
+    class Meta:
+        app_label = 'main'
+
+
 class Summoner(models.Model):
     # https://developer.riotgames.com/api-methods/#summoner-v4/GET_getBySummonerName
 
@@ -35,17 +51,6 @@ class Summoner(models.Model):
             'icon_url':
             (LOL_URL['PROFILE_ICON'] % (latest_version, str(self.icon_id))),
         }
-
-
-class Champion(models.Model):
-    key = models.IntegerField(default=0, primary_key=True)
-    id = models.CharField(max_length=32)
-
-    class Meta:
-        app_label = 'main'
-
-    def get_data(self):
-        pass
 
 
 class ChampionMastery(models.Model):

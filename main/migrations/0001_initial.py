@@ -20,6 +20,13 @@ class Migration(migrations.Migration):
             ],
         ),
         migrations.CreateModel(
+            name='Spell',
+            fields=[
+                ('key', models.IntegerField(default=0, primary_key=True, serialize=False)),
+                ('id', models.CharField(max_length=32)),
+            ],
+        ),
+        migrations.CreateModel(
             name='Summoner',
             fields=[
                 ('name', models.CharField(db_index=True, max_length=64, unique=True)),

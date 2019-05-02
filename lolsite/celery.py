@@ -19,4 +19,9 @@ app.conf.beat_schedule = {
         'schedule': crontab(minute=0, hour=0),
         'args': (),
     },
+    'update-spell-info-every-day': {
+        'task': 'main.tasks.update_spell_info',
+        'schedule': crontab(minute=0, hour=0),
+        'args': (),
+    },
 }
